@@ -3,7 +3,8 @@ const constant = require('../constant/errorMessgae')
 
 exports.getTodoList = async (req, res) => {
     try{
-        let todoList = await Todo.find({})
+        let user = req.user
+        let todoList = await Todo.find({userId: user.user.id})
         res.status(200).send(todoList)
     } catch(err) {
         console.log(err)
