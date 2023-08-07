@@ -5,10 +5,6 @@ const constant = require('../constant/errorMessgae')
 
 exports.register = async (req, res) => {
     try {
-        if (req.body.username == null || req.body.email == null || req.body.password == null ){
-            return res.status(400).send(constant.BAD_REQUEST)
-        }
-
         let user = await User.findOne({email: req.body.email})
         if(user){
             return res.status(400).send('User is exist.')
@@ -33,10 +29,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try{
         const { email, password } = req.body
-        if (email == null || password == null){
-            return res.status(400).send(constant.BAD_REQUEST)
-        }
-
         let user = await User.findOne({email: email})
         if (user){
             let isMatch = await bcrypt.compare(password, user.password)
