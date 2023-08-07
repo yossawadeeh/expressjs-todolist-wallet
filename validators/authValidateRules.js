@@ -13,12 +13,12 @@ const registerValidationRules = () => {
 
 const loginValidationRules = () => {
   return [
-    body("email").notEmpty(),
+    body("email").notEmpty().isEmail().withMessage("email must be an email."),
     body("password").notEmpty(),
   ];
 };
 
 module.exports = {
   registerValidationRules,
-  loginValidationRules
+  loginValidationRules,
 };
