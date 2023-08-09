@@ -7,8 +7,8 @@ const { todoValidationRules } = require('../validators/todoValidateRules')
 
 router.get('/todo', authMiddleware, getTodoList)
 router.get('/todo/:id', authMiddleware, getTodo)
-router.post('/todo', todoValidationRules(), validate, authMiddleware, createTodo)
-router.put('/todo/:id', todoValidationRules(), validate, authMiddleware, updateTodo)
+router.post('/todo', authMiddleware, todoValidationRules(), validate, createTodo)
+router.put('/todo/:id',authMiddleware, todoValidationRules(), validate, updateTodo)
 router.delete('/todo/:id', authMiddleware, deleteTodo)
 
 module.exports = router

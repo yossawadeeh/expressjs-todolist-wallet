@@ -4,8 +4,49 @@ const constant = require("../constant/errorMessgae");
 exports.getTransactionList = async (req, res) => {
   try {
     let user = req.user;
-    let transactionList = await Transaction.find({ userId: user.user.id });
-    res.status(200).send(transactionList);
+
+    let startDate = req.query.startDate
+    let endDate = req.query.endDate
+    let type = req.query.type
+    let page = parseInt(req.query.page) || 1
+    let perPage = parseInt(req.query.perPage) || 10
+
+    let query = Transaction.find()
+    query.where({ userId: user.user.id })
+    if (startDate != null) {
+      query.where("transactionDate").gte(startDate).lte(endDate)
+    }
+
+    if (type != null){
+      query.where("type", type)
+    }
+    
+    let countQuery = query.clone(); // Clone the query for count
+    let count = await countQuery.countDocuments().exec();
+    let transactionList = await query.sort({transactionDate: -1}).skip((page-1) * perPage).limit(perPage).exec()
+
+    let incomeTotal = 0
+    let expenseTotal = 0
+
+    transactionList.forEach(transaction => {
+      if (transaction.type == "income"){
+        incomeTotal += transaction.total
+      }
+
+      if (transaction.type == "expense"){
+        expenseTotal += transaction.total
+      }
+    });
+
+    let result = {
+      items: transactionList,
+      incomeTotal: incomeTotal,
+      expenseTotal: expenseTotal,
+      diffTotal: incomeTotal - expenseTotal,
+      total: count,
+    }
+
+    res.status(200).json(result);
   } catch (err) {
     console.log(err);
     res.status(500).send(constant.INTERNAL_SERVER_ERROR);
@@ -21,13 +62,19 @@ exports.getTransaction = async (req, res) => {
     }
 
     res.status(200).send(transaction);
+
+    let result = {
+      item: transaction
+    }
+
+    res.status(200).json(result);
   } catch (err) {
     console.log(err);
     res.status(500).send(constant.INTERNAL_SERVER_ERROR);
   }
 };
 
-exports.createTransaction = async (req, res) => {
+exports.createTransaction = async (req, res) => { 
   try {
     let user = req.user;
     let transaction = new Transaction({
@@ -36,7 +83,11 @@ exports.createTransaction = async (req, res) => {
     });
 
     await transaction.save();
-    res.status(201).send(transaction);
+    let result = {
+      item: transaction
+    }
+
+    res.status(200).json(result);
   } catch (err) {
     console.log(err);
     res.status(500).send(constant.INTERNAL_SERVER_ERROR);
@@ -56,7 +107,11 @@ exports.updateTransaction = async (req, res) => {
       return res.status(404).send(constant.RECORD_NOTFOUND);
     }
 
-    res.status(200).send(transactionUpdate);
+    let result = {
+      item: transactionUpdate
+    }
+
+    res.status(200).json(result);
   } catch (err) {
     console.log(err);
     res.status(500).send(constant.INTERNAL_SERVER_ERROR);

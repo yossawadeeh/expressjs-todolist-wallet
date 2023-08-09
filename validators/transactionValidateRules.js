@@ -1,4 +1,5 @@
 const { body } = require("express-validator");
+const { TypeTransaction } = require("../enum/enums")
 
 const transactionValidationRules = () => {
   return [
@@ -8,8 +9,7 @@ const transactionValidationRules = () => {
       .withMessage("transactionDate should be valid date"),
     body("type")
       .notEmpty()
-      .isIn(["income", "expense"])
-      .withMessage("type must be income or outcome only."),
+      .isIn(Object.values(TypeTransaction)),
     body("category").notEmpty(),
     body("total")
       .notEmpty()
@@ -22,3 +22,4 @@ const transactionValidationRules = () => {
 module.exports = {
   transactionValidationRules,
 };
+ 

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose"),
   Schema = mongoose.Schema;
+const { TypeTransaction } = require("../enum/enums")
 
 const transactionSchema = mongoose.Schema(
   {
@@ -15,7 +16,7 @@ const transactionSchema = mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["income", "expense"],
+      enum: Object.values(TypeTransaction),
     },
     category: {
       type: String,
