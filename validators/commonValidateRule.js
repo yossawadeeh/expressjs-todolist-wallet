@@ -8,6 +8,7 @@ const searchValidateRule = () => {
     query("type")
       .optional()
       .isIn(Object.values(TypeTransaction)),
+    query("search").optional().isString(),
     query("page").optional().isInt(),
     query("perPage").optional().isInt(),
   ];
